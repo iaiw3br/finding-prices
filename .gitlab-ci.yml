@@ -1,3 +1,8 @@
-Test:
+stages:
+  - deploy
+deploy:
+  stage: deploy
   script:
-    - echo Test
+    - npm install
+    - npm run build
+    - if [ "$CI_COMMIT_REF_NAME" === "master" ]; then cp - R dist/* /var/www/html; fi
