@@ -33,14 +33,13 @@ func Run() {
 		log.Fatal(err)
 		return
 	}
-	fmt.Printf("elements for search:%d", len(itemsForSearch))
+	fmt.Printf("elements for search: %d\n", len(itemsForSearch))
 
 	now := time.Now()
 	for _, item := range itemsForSearch {
 		priceFromWebsite := getPriceFromWebsite(item.ItemStore.URL)
 
 		if item.Price != priceFromWebsite {
-			fmt.Printf("price was been changed\n")
 			cp := price.CreatePrice{
 				ItemStoreId: item.ID,
 				Price:       priceFromWebsite,
@@ -51,6 +50,8 @@ func Run() {
 				log.Fatal(err)
 				// need continue
 			}
+			fmt.Printf("price was been changed item id:%v\n", item.ItemStore.ItemID)
+			fmt.Printf(`old price: "%v", new price: "%v"`, item.Price, priceFromWebsite)
 		}
 	}
 }
