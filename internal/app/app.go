@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"log"
@@ -37,7 +38,22 @@ func Run() {
 
 	now := time.Now()
 	for _, item := range itemsForSearch {
-		priceFromWebsite := getPriceFromWebsite(item.ItemStore.URL)
+		var priceFromWebsite float64
+
+		doc, err := getDocument(item.ItemStore.URL)
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+
+		switch item.ItemStore.StoreID {
+		case 1:
+			priceFromWebsite = getPriceFromWebsite(doc, ".price__now")
+		case 2:
+			priceFromWebsite = getPriceFromWebsite(doc, ".detail-card__price-cur")
+		default:
+			continue
+		}
 
 		if item.Price != priceFromWebsite {
 			cp := price.CreatePrice{
@@ -48,7 +64,6 @@ func Run() {
 			err = priceService.Create(ctx, cp)
 			if err != nil {
 				log.Fatal(err)
-				// need continue
 			}
 			fmt.Printf("price was been changed item id:%v\n", item.ItemStore.ItemID)
 			fmt.Printf("old price: %v, new price: %v\n", item.Price, priceFromWebsite)
@@ -56,26 +71,30 @@ func Run() {
 	}
 }
 
-func getPriceFromWebsite(url string) float64 {
+func getDocument(url string) (*goquery.Document, error) {
 	// Make HTTP GET request
 	res, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		return nil, errors.New("status is not OK")
 	}
 
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
+	return doc, nil
+}
+
+func getPriceFromWebsite(doc *goquery.Document, className string) float64 {
 	var title string
 	// Find the review items
-	doc.Find(".price__now").Each(func(_ int, s *goquery.Selection) {
+	doc.Find(className).Each(func(_ int, s *goquery.Selection) {
 		// For each link found, get the title
 		title = s.Find("span").Text()
 		title = strings.ReplaceAll(title, " ", "")

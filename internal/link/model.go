@@ -6,6 +6,12 @@ type ItemStore struct {
 	URL     string `json:"url"`
 }
 
+type SearchNil struct {
+	ID        int
+	Price     *float64
+	ItemStore ItemStore
+}
+
 type Search struct {
 	ID        int
 	Price     float64
