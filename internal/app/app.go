@@ -51,7 +51,7 @@ func Run() {
 				// need continue
 			}
 			fmt.Printf("price was been changed item id:%v\n", item.ItemStore.ItemID)
-			fmt.Printf(`old price: "%v", new price: "%v"`, item.Price, priceFromWebsite)
+			fmt.Printf("old price: %v, new price: %v\n", item.Price, priceFromWebsite)
 		}
 	}
 }
