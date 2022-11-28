@@ -7,6 +7,9 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
+	"prices/internal/customers/ipiter"
+	lite_mobile "prices/internal/customers/lite-mobile"
+	"prices/internal/customers/pitergsm"
 	"prices/internal/link"
 	"prices/internal/price"
 	"prices/pkg/client/postgresql"
@@ -35,24 +38,27 @@ func Run() {
 		return
 	}
 	fmt.Printf("elements for search: %d\n", len(itemsForSearch))
-
 	now := time.Now()
 	for _, item := range itemsForSearch {
-		var priceFromWebsite float64
 
 		doc, err := getDocument(item.ItemStore.URL)
 		if err != nil {
 			log.Fatal(err)
-			continue
 		}
 
+		var priceFromWebsite float64
 		switch item.ItemStore.StoreID {
 		case 1:
-			priceFromWebsite = getPriceFromWebsite(doc, ".price__now")
+			priceFromWebsite, err = pitergsm.Search(doc)
 		case 2:
-			priceFromWebsite = getPriceFromWebsite(doc, ".detail-card__price-cur")
-		default:
-			continue
+			priceFromWebsite, err = lite_mobile.Search(doc)
+		case 3:
+			priceFromWebsite, err = ipiter.Search(doc)
+		}
+
+		if err != nil {
+			log.Fatal(err)
+			//continue
 		}
 
 		if item.Price != priceFromWebsite {
