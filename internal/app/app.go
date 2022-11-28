@@ -15,8 +15,6 @@ import (
 	"prices/internal/link"
 	"prices/internal/price"
 	"prices/pkg/client/postgresql"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -98,21 +96,4 @@ func getDocument(url string) (*goquery.Document, error) {
 	}
 
 	return doc, nil
-}
-
-func getPriceFromWebsite(doc *goquery.Document, className string) float64 {
-	var title string
-	// Find the review items
-	doc.Find(className).Each(func(_ int, s *goquery.Selection) {
-		// For each link found, get the title
-		title = s.Find("span").Text()
-		title = strings.ReplaceAll(title, " ", "")
-	})
-
-	price, err := strconv.ParseFloat(title, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return price
 }
