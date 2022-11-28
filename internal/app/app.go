@@ -27,14 +27,6 @@ func Run() {
 		return
 	}
 
-	pg := pitergsm.NewConnector()
-	lm := lite_mobile.NewConnector()
-	ip := ipiter.NewConnector()
-	s78 := store78.NewConnector()
-
-	connectorRegistry := customers.GlobalRegistry()
-	connectorRegistry.Add(pg, lm, ip, s78)
-
 	priceStore := price.NewStore(client)
 	priceService := price.NewService(priceStore)
 	linkItemStore := link.NewStore(client)
@@ -47,6 +39,8 @@ func Run() {
 	}
 	fmt.Printf("elements for search: %d\n", len(itemsForSearch))
 	now := time.Now()
+	connectorRegistry := createConnector()
+
 	for _, item := range itemsForSearch {
 
 		doc, err := getDocument(item.ItemStore.URL)
@@ -76,6 +70,18 @@ func Run() {
 			fmt.Printf("old price: %v, new price: %v\n", item.Price, priceFromWebsite)
 		}
 	}
+}
+
+func createConnector() *customers.Registry[customers.GDS] {
+	pg := pitergsm.NewConnector()
+	lm := lite_mobile.NewConnector()
+	ip := ipiter.NewConnector()
+	s78 := store78.NewConnector()
+
+	connectorRegistry := customers.GlobalRegistry()
+	connectorRegistry.Add(pg, lm, ip, s78)
+
+	return connectorRegistry
 }
 
 func getDocument(url string) (*goquery.Document, error) {
