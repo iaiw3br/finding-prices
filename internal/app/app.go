@@ -7,6 +7,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
+	"prices/internal/customers"
 	"prices/internal/customers/ipiter"
 	lite_mobile "prices/internal/customers/lite-mobile"
 	"prices/internal/customers/pitergsm"
@@ -27,6 +28,13 @@ func Run() {
 		return
 	}
 
+	pg := pitergsm.NewConnector()
+	lm := lite_mobile.NewConnector()
+	ip := ipiter.NewConnector()
+
+	connectorRegistry := customers.GlobalRegistry()
+	connectorRegistry.Add(pg, lm, ip)
+
 	priceStore := price.NewStore(client)
 	priceService := price.NewService(priceStore)
 	linkItemStore := link.NewStore(client)
@@ -46,15 +54,8 @@ func Run() {
 			log.Fatal(err)
 		}
 
-		var priceFromWebsite float64
-		switch item.ItemStore.StoreID {
-		case 1:
-			priceFromWebsite, err = pitergsm.Search(doc)
-		case 2:
-			priceFromWebsite, err = lite_mobile.Search(doc)
-		case 3:
-			priceFromWebsite, err = ipiter.Search(doc)
-		}
+		conn := connectorRegistry.Get(item.ItemStore.Store.Title)
+		priceFromWebsite, err := conn.Search(doc)
 
 		if err != nil {
 			log.Fatal(err)

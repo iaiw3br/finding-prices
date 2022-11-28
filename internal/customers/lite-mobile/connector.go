@@ -6,7 +6,21 @@ import (
 	"strings"
 )
 
-func Search(doc *goquery.Document) (float64, error) {
+const Name = "lite-mobile"
+
+type Connector struct {
+}
+
+func NewConnector() Connector {
+	return Connector{}
+}
+
+// GetName function returns connector name
+func (c Connector) Name() string {
+	return Name
+}
+
+func (c Connector) Search(doc *goquery.Document) (float64, error) {
 	var title string
 	// Find the review items
 	doc.Find(".detail-card__price-cur").Each(func(_ int, s *goquery.Selection) {

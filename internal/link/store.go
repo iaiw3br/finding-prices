@@ -21,9 +21,12 @@ func NewStore(client *pgxpool.Pool) Store {
 
 func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	sql := `
-		SELECT DISTINCT ON (lis.id) lis.id, lis.url, p.price, lis.item_id, lis.store_id
+		SELECT DISTINCT ON (lis.id) lis.id, lis.url, 
+			p.price, lis.item_id, lis.store_id,
+			s.title
 		FROM link_items_stores lis
 		LEFT JOIN prices p ON lis.id = p.item_store_id
+		JOIN stores s on lis.store_id = s.id
 		ORDER BY id, created DESC;
 	`
 
@@ -37,14 +40,17 @@ func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	for rows.Next() {
 		var i SearchNil
 		var s Search
-		err = rows.Scan(&i.ID, &i.ItemStore.URL, &i.Price, &i.ItemStore.ItemID, &i.ItemStore.StoreID)
+		err = rows.Scan(&i.ID, &i.ItemStore.URL,
+			&i.Price, &i.ItemStore.ItemID, &i.ItemStore.Store.ID,
+			&i.ItemStore.Store.Title)
 		if err != nil {
 			return nil, err
 		}
 
 		s.ID = i.ID
 		s.ItemStore.URL = i.ItemStore.URL
-		s.ItemStore.StoreID = i.ItemStore.StoreID
+		s.ItemStore.Store.ID = i.ItemStore.Store.ID
+		s.ItemStore.Store.Title = i.ItemStore.Store.Title
 		if i.Price != nil {
 			s.Price = *i.Price
 		}
