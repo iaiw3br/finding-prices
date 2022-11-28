@@ -11,6 +11,7 @@ import (
 	"prices/internal/customers/ipiter"
 	lite_mobile "prices/internal/customers/lite-mobile"
 	"prices/internal/customers/pitergsm"
+	"prices/internal/customers/store78"
 	"prices/internal/link"
 	"prices/internal/price"
 	"prices/pkg/client/postgresql"
@@ -31,9 +32,10 @@ func Run() {
 	pg := pitergsm.NewConnector()
 	lm := lite_mobile.NewConnector()
 	ip := ipiter.NewConnector()
+	s78 := store78.NewConnector()
 
 	connectorRegistry := customers.GlobalRegistry()
-	connectorRegistry.Add(pg, lm, ip)
+	connectorRegistry.Add(pg, lm, ip, s78)
 
 	priceStore := price.NewStore(client)
 	priceService := price.NewService(priceStore)
