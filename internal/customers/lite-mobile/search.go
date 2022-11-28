@@ -9,7 +9,7 @@ import (
 func Search(doc *goquery.Document) (float64, error) {
 	var title string
 	// Find the review items
-	doc.Find(".price__now").Each(func(_ int, s *goquery.Selection) {
+	doc.Find(".detail-card__price-cur").Each(func(_ int, s *goquery.Selection) {
 		// For each link found, get the title
 		title = s.Find("span").Text()
 		title = strings.ReplaceAll(title, " ", "")
