@@ -7,6 +7,8 @@ import (
 )
 
 const Name = "lite-mobile"
+const blockClassName = ".detail-card__price-cur"
+const elementName = "span"
 
 type Connector struct {
 }
@@ -23,9 +25,9 @@ func (c Connector) Name() string {
 func (c Connector) Search(doc *goquery.Document) (float64, error) {
 	var title string
 	// Find the review items
-	doc.Find(".detail-card__price-cur").Each(func(_ int, s *goquery.Selection) {
+	doc.Find(blockClassName).Each(func(_ int, s *goquery.Selection) {
 		// For each link found, get the title
-		title = s.Find("span").Text()
+		title = s.Find(elementName).Text()
 		title = strings.ReplaceAll(title, " ", "")
 	})
 

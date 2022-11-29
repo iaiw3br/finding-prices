@@ -7,6 +7,8 @@ import (
 )
 
 const Name = "ipiter"
+const blockClassName = ".pricebox"
+const elementClassName = ".price"
 
 type Connector struct {
 }
@@ -23,9 +25,9 @@ func (c Connector) Name() string {
 func (c Connector) Search(doc *goquery.Document) (float64, error) {
 	var title string
 	// Find the review items
-	doc.Find(".pricebox").Each(func(_ int, s *goquery.Selection) {
+	doc.Find(blockClassName).Each(func(_ int, s *goquery.Selection) {
 		// For each link found, get the title
-		title = s.Find(".price").Text()
+		title = s.Find(elementClassName).Text()
 		title = strings.ReplaceAll(title, " ", "")
 		title = strings.ReplaceAll(title, "\n", "")
 		title = strings.ReplaceAll(title, "₽", "")
