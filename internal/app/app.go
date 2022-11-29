@@ -70,6 +70,7 @@ func Run() {
 			fmt.Printf("old price: %v, new price: %v\n", s.Price.Price, priceFromWebsite)
 		}
 	}
+	fmt.Println("search completed")
 }
 
 func createConnector() *customers.Registry[customers.GDS] {
