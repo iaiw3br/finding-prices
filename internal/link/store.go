@@ -40,19 +40,17 @@ func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	for rows.Next() {
 		var i SearchNil
 		var s Search
-		err = rows.Scan(&i.ID, &i.ItemStore.URL,
-			&i.Price, &i.ItemStore.ItemID, &i.ItemStore.Store.ID,
-			&i.ItemStore.Store.Title)
+		err = rows.Scan(&i.ItemInStore.ID, &i.ItemInStore.URL,
+			&i.Price, &i.ItemInStore.ID, &i.Store.ID,
+			&i.Store.Title)
 		if err != nil {
 			return nil, err
 		}
 
-		s.ID = i.ID
-		s.ItemStore.URL = i.ItemStore.URL
-		s.ItemStore.Store.ID = i.ItemStore.Store.ID
-		s.ItemStore.Store.Title = i.ItemStore.Store.Title
+		s.ItemInStore = i.ItemInStore
+		s.Store = i.Store
 		if i.Price != nil {
-			s.Price = *i.Price
+			s.Price.Price = *i.Price
 		}
 
 		itemsSearch = append(itemsSearch, s)

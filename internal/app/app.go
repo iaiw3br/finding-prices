@@ -41,14 +41,14 @@ func Run() {
 	now := time.Now()
 	connectorRegistry := createConnector()
 
-	for _, item := range itemsForSearch {
+	for _, s := range itemsForSearch {
 
-		doc, err := getDocument(item.ItemStore.URL)
+		doc, err := getDocument(s.ItemInStore.URL)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		conn := connectorRegistry.Get(item.ItemStore.Store.Title)
+		conn := connectorRegistry.Get(s.Store.Title)
 		priceFromWebsite, err := conn.Search(doc)
 
 		if err != nil {
@@ -56,9 +56,9 @@ func Run() {
 			//continue
 		}
 
-		if item.Price != priceFromWebsite {
+		if s.Price.Price != priceFromWebsite {
 			cp := price.CreatePrice{
-				ItemStoreId: item.ID,
+				ItemStoreId: s.ItemInStore.ID,
 				Price:       priceFromWebsite,
 				Created:     now,
 			}
@@ -66,8 +66,8 @@ func Run() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("price was been changed item id:%v\n", item.ItemStore.ItemID)
-			fmt.Printf("old price: %v, new price: %v\n", item.Price, priceFromWebsite)
+			fmt.Printf("price was been changed item id:%v\n", s.ItemInStore.ItemID)
+			fmt.Printf("old price: %v, new price: %v\n", s.Price.Price, priceFromWebsite)
 		}
 	}
 }

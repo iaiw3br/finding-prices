@@ -1,21 +1,28 @@
 package link
 
-type ItemStore struct {
-	ItemID int    `json:"item_id"`
-	Store  store  `json:"store_id"`
-	URL    string `json:"url"`
+import "time"
+
+type itemInStore struct {
+	ID     int
+	URL    string
+	ItemID int
 }
 
 type SearchNil struct {
-	ID        int
-	Price     *float64
-	ItemStore ItemStore
+	ItemInStore itemInStore
+	Store       store
+	Price       *float64
 }
 
 type Search struct {
-	ID        int
-	Price     float64
-	ItemStore ItemStore
+	ItemInStore itemInStore
+	Store       store
+	Price       price
+}
+
+type price struct {
+	Price   float64
+	Created time.Time
 }
 
 type store struct {
