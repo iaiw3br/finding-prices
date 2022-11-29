@@ -8,17 +8,6 @@ type Registry[T Named] struct {
 	connectors map[string]T
 }
 
-// New instantiates registry of GDS
-func New[T Named](ns ...T) *Registry[T] {
-	r := &Registry[T]{
-		connectors: map[string]T{},
-	}
-
-	r.Add(ns...)
-
-	return r
-}
-
 var globalRegistry = Registry[GDS]{
 	connectors: map[string]GDS{},
 }
