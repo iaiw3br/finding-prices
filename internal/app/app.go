@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"prices/internal/customers"
 	"prices/internal/customers/ipiter"
+	"prices/internal/customers/iport"
 	lite_mobile "prices/internal/customers/lite-mobile"
 	"prices/internal/customers/pitergsm"
 	"prices/internal/customers/store78"
@@ -42,7 +43,6 @@ func Run() {
 	connectorRegistry := createConnector()
 
 	for _, s := range itemsForSearch {
-
 		doc, err := getDocument(s.ItemInStore.URL)
 		if err != nil {
 			log.Fatal(err)
@@ -77,9 +77,10 @@ func createConnector() *customers.Registry[customers.GDS] {
 	lm := lite_mobile.NewConnector()
 	ip := ipiter.NewConnector()
 	s78 := store78.NewConnector()
+	ipt := iport.NewConnector()
 
 	connectorRegistry := customers.GlobalRegistry()
-	connectorRegistry.Add(pg, lm, ip, s78)
+	connectorRegistry.Add(pg, lm, ip, s78, ipt)
 
 	return connectorRegistry
 }
