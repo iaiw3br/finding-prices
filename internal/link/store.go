@@ -41,7 +41,7 @@ func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 		var i SearchNil
 		var s Search
 		err = rows.Scan(&i.ItemInStore.ID, &i.ItemInStore.URL,
-			&i.Price, &i.ItemInStore.ID, &i.Store.ID,
+			&i.Price, &i.ItemInStore.ItemID, &i.Store.ID,
 			&i.Store.Title)
 		if err != nil {
 			return nil, err
