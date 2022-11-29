@@ -11,7 +11,7 @@ CREATE TABLE items
     title text not null
 );
 
-CREATE TABLE link_items_stores
+CREATE TABLE item_in_store
 (
     id        serial primary key,
     item_id   int not null,
@@ -20,15 +20,16 @@ CREATE TABLE link_items_stores
     FOREIGN KEY (store_id) REFERENCES stores (id),
     url       text
 );
-CREATE INDEX item_id_idx ON link_items_stores (item_id);
-CREATE INDEX store_id_idx ON link_items_stores (item_id);
+CREATE INDEX item_id_idx ON item_in_store (item_id);
+CREATE INDEX store_id_idx ON item_in_store (item_id);
 
 CREATE TABLE prices
 (
     id            serial primary key,
     created       date,
     item_store_id int,
-    FOREIGN KEY (item_store_id) REFERENCES link_items_stores (id),
+    FOREIGN KEY (item_store_id) REFERENCES item_in_store (id),
     price         float4
 );
 CREATE INDEX item_store_idx ON prices (item_store_id);
+

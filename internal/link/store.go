@@ -21,12 +21,12 @@ func NewStore(client *pgxpool.Pool) Store {
 
 func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	sql := `
-		SELECT DISTINCT ON (lis.id) lis.id, lis.url, 
-			p.price, lis.item_id, lis.store_id,
-			s.title
-		FROM link_items_stores lis
-		LEFT JOIN prices p ON lis.id = p.item_store_id
-		JOIN stores s on lis.store_id = s.id
+		SELECT DISTINCT ON (iis.id) iis.id, iis.url,
+                           p.price, iis.item_id, iis.store_id,
+                           s.title
+		FROM item_in_store iis
+				 LEFT JOIN prices p ON iis.id = p.item_store_id
+				 JOIN stores s on iis.store_id = s.id
 		ORDER BY id, created DESC;
 	`
 
