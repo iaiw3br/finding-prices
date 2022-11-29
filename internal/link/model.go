@@ -12,12 +12,14 @@ type SearchNil struct {
 	ItemInStore itemInStore
 	Store       store
 	Price       *float64
+	Item        item
 }
 
 type Search struct {
 	ItemInStore itemInStore
 	Store       store
 	Price       price
+	Item        item
 }
 
 type price struct {
@@ -26,6 +28,11 @@ type price struct {
 }
 
 type store struct {
+	ID    int
+	Title string
+}
+
+type item struct {
 	ID    int
 	Title string
 }

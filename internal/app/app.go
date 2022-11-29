@@ -66,7 +66,7 @@ func Run() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("price was been changed item id:%v\n", s.ItemInStore.ItemID)
+			fmt.Printf("price was been changed in store: %s, item: %v\n", s.Store.Title, s.Item.Title)
 			fmt.Printf("old price: %v, new price: %v\n", s.Price.Price, priceFromWebsite)
 		}
 	}

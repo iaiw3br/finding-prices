@@ -23,10 +23,11 @@ func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	sql := `
 		SELECT DISTINCT ON (iis.id) iis.id, iis.url,
                            p.price, iis.item_id, iis.store_id,
-                           s.title
+                           s.title, i.title 
 		FROM item_in_store iis
 				 LEFT JOIN prices p ON iis.id = p.item_store_id
 				 JOIN stores s on iis.store_id = s.id
+				 JOIN items i on iis.item_id = i.id
 		ORDER BY id, created DESC;
 	`
 
@@ -39,22 +40,29 @@ func (r repository) ItemsForSearch(ctx context.Context) ([]Search, error) {
 	var itemsSearch []Search
 	for rows.Next() {
 		var i SearchNil
-		var s Search
 		err = rows.Scan(&i.ItemInStore.ID, &i.ItemInStore.URL,
 			&i.Price, &i.ItemInStore.ItemID, &i.Store.ID,
-			&i.Store.Title)
+			&i.Store.Title, &i.Item.Title)
 		if err != nil {
 			return nil, err
 		}
 
-		s.ItemInStore = i.ItemInStore
-		s.Store = i.Store
-		if i.Price != nil {
-			s.Price.Price = *i.Price
-		}
-
-		itemsSearch = append(itemsSearch, s)
+		itemsSearch = append(itemsSearch, convertToSearch(i))
 	}
 
 	return itemsSearch, nil
+}
+
+func convertToSearch(s SearchNil) Search {
+	search := Search{
+		ItemInStore: s.ItemInStore,
+		Store:       s.Store,
+		Item:        s.Item,
+	}
+
+	if s.Price != nil {
+		search.Price.Price = *s.Price
+	}
+
+	return search
 }
