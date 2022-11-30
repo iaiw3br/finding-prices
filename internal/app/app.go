@@ -20,6 +20,7 @@ import (
 )
 
 func Run() {
+	start := time.Now()
 	ctx := context.Background()
 
 	client, err := postgresql.New(ctx)
@@ -70,7 +71,8 @@ func Run() {
 			fmt.Printf("old price: %v, new price: %v\n", s.Price.Price, priceFromWebsite)
 		}
 	}
-	fmt.Println("search completed")
+	end := time.Now()
+	fmt.Printf("search completed, time:%2.f sec", end.Sub(start).Seconds())
 }
 
 func createConnector() *customers.Registry[customers.GDS] {
