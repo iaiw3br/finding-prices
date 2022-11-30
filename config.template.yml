@@ -1,0 +1,12 @@
+listen:
+  port:
+  host:
+
+client:
+  postgresql:
+    driver: postgres
+    host:
+    port:
+    database:
+    username:
+    password:
