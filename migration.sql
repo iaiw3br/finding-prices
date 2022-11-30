@@ -26,7 +26,7 @@ CREATE INDEX store_id_idx ON item_in_store (item_id);
 CREATE TABLE prices
 (
     id            serial primary key,
-    created       date,
+    created       timestamp without time zone,
     item_store_id int,
     FOREIGN KEY (item_store_id) REFERENCES item_in_store (id),
     price         float4
