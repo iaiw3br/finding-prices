@@ -33,3 +33,8 @@ CREATE TABLE prices
 );
 CREATE INDEX item_store_idx ON prices (item_store_id);
 
+
+-- test data
+INSERT INTO public.stores (title, website) VALUES ('pitergsm', 'https://pitergsm.ru/');
+INSERT INTO public.items (title) VALUES ('Apple MacBook Pro 14" MKGP3 (M1 Pro 8C CPU, 14C GPU, 2021) 16 ГБ, 512 ГБ SSD, серый космос');
+INSERT INTO public.item_in_store (item_id, store_id, url) VALUES (1, 1, 'https://pitergsm.ru/catalog/tablets-and-laptops/mac/macbook-pro/macbook-pro-14-2021/13263/');
