@@ -1,47 +1,32 @@
-# Introduction
+# Finding prices
 
-This is a template for doing go-micro development using GitLab. It's based on the
-[helloworld](https://github.com/micro/examples/tree/master/helloworld) Go Micro
-template.
+This is a project for finding prices from websites. 
 
-# Reference links
+I wanted to buy a macbook and I need to understand how often the price changes.
 
-- [GitLab CI Documentation](https://docs.gitlab.com/ee/ci/)
-- [Go Micro Overview](https://micro.mu/docs/go-micro.html)
-- [Go Micro Toolkit](https://micro.mu/docs/go-micro.html)
+## Getting started
 
-# Getting started
+You need: 
 
-First thing to do is update `main.go` with your new project path:
+1. download go, current version 1.18.5 https://go.dev/dl/
+2. download postgresql https://www.postgresql.org/download/
+3. create local database and insert tables, data from migration.sql
+4. create config.yml at the root of the project and transfer structure from config.template.uml
+5. run the file ./cmd/main/maing.go with command ```go run main.go```
 
-```diff
--       proto "gitlab.com/gitlab-org/project-templates/go-micro/proto"
-+       proto "gitlab.com/$YOUR_NAMESPACE/$PROJECT_NAME/proto"
-```
-
-Note that these are not actual environment variables, but values you should
-replace.
 
 ## What's contained in this project
 
-- main.go - is the main definition of the service, handler and client
-- proto - contains the protobuf definition of the API
+- main.go - is the main definition of the service
+- internal/customers - contains search function for each customers
+- internal/link - contains functions for finding prices for items
+- internal/prices - functions for creating new prices
+- pkg/postgresql/postgresql - create connection to db
 
 ## Dependencies
 
 Install the following
 
-- [micro](https://github.com/micro/micro)
-- [protoc-gen-micro](https://github.com/micro/protoc-gen-micro)
-
-## Run Service
-
-```shell
-go run main.go
-```
-
-## Query Service
-
-```
-micro call greeter Greeter.Hello '{"name": "John"}'
-```
+- [goquery](https://github.com/PuerkitoBio/goquery)
+- [cleanenv](https://github.com/ilyakaznacheev/cleanenv)
+- [pgx4](https://github.com/jackc/pgx/v4)
