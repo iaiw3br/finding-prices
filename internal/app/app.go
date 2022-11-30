@@ -72,7 +72,7 @@ func Run() {
 		}
 	}
 	end := time.Now()
-	fmt.Printf("search completed, time:%2.f sec", end.Sub(start).Seconds())
+	fmt.Printf("search completed, time:%2.f sec\n", end.Sub(start).Seconds())
 }
 
 func createConnector() *customers.Registry[customers.GDS] {
