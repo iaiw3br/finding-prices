@@ -46,15 +46,16 @@ func Run() {
 	for _, s := range itemsForSearch {
 		doc, err := getDocument(s.ItemInStore.URL)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("parse url is failed: %s\n", s.ItemInStore.URL)
+			continue
 		}
 
 		conn := connectorRegistry.Get(s.Store.Title)
 		priceFromWebsite, err := conn.Search(doc)
 
 		if err != nil {
-			log.Fatal(err)
-			//continue
+			fmt.Printf("get price from website failed: %s\n", s.ItemInStore.URL)
+			continue
 		}
 
 		if s.Price.Price != priceFromWebsite {
