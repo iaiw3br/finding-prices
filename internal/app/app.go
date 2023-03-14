@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/PuerkitoBio/goquery"
+
 	"prices/internal/customers"
 	"prices/internal/customers/ipiter"
 	"prices/internal/customers/iport"
@@ -16,7 +19,6 @@ import (
 	"prices/internal/link"
 	"prices/internal/price"
 	"prices/pkg/client/postgresql"
-	"time"
 )
 
 func Run() {
@@ -43,37 +45,48 @@ func Run() {
 	now := time.Now()
 	connectorRegistry := createConnector()
 
+	results := make(chan price.CreatePrice)
+
 	for _, s := range itemsForSearch {
-		doc, err := getDocument(s.ItemInStore.URL)
-		if err != nil {
-			fmt.Printf("parse url is failed: %s\n", s.ItemInStore.URL)
-			continue
-		}
-
-		conn := connectorRegistry.Get(s.Store.Title)
-		priceFromWebsite, err := conn.Search(doc)
-
-		if err != nil {
-			fmt.Printf("get price from website failed: %s\n", s.ItemInStore.URL)
-			continue
-		}
-
-		if s.Price.Price != priceFromWebsite {
-			cp := price.CreatePrice{
-				ItemStoreId: s.ItemInStore.ID,
-				Price:       priceFromWebsite,
-				Created:     now,
-			}
-			err = priceService.Create(ctx, cp)
+		go func(s link.Search) {
+			doc, err := getDocument(s.ItemInStore.URL)
 			if err != nil {
-				log.Fatal(err)
+				fmt.Printf("parse url is failed: %s\n", s.ItemInStore.URL)
+				return
 			}
-			fmt.Printf("price was been changed in store: %s, item: %v\n", s.Store.Title, s.Item.Title)
-			fmt.Printf("old price: %v, new price: %v\n", s.Price.Price, priceFromWebsite)
-		}
+
+			conn := connectorRegistry.Get(s.Store.Title)
+			priceFromWebsite, err := conn.Search(doc)
+			if err != nil {
+				fmt.Printf("get price from website failed: %s\n", s.ItemInStore.URL)
+				return
+			}
+
+			if s.Price.Price != priceFromWebsite {
+				fmt.Printf("send result price: %f, storeId: %d\n", priceFromWebsite, s.ItemInStore.ID)
+				results <- price.CreatePrice{
+					ItemStoreId: s.ItemInStore.ID,
+					Price:       priceFromWebsite,
+					Created:     now,
+				}
+			}
+			close(results)
+		}(s)
 	}
+
+	for result := range results {
+		if _, ok := <-results; !ok {
+			break
+		}
+		fmt.Printf("get result price: %f, storeId: %d\n", result.Price, result.ItemStoreId)
+		if err = priceService.Create(ctx, result); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("created")
+	}
+
 	end := time.Now()
-	fmt.Printf("search completed, time:%2.f sec\n", end.Sub(start).Seconds())
+	fmt.Printf("search completed, time:%d sec\n", end.Sub(start).Milliseconds())
 }
 
 func createConnector() *customers.Registry[customers.GDS] {
