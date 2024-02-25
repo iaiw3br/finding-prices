@@ -1,3 +1,5 @@
+![finding-prices](assets/banner.gif)
+
 # Finding prices
 
 This is a project for finding prices from websites. 
